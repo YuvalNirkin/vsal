@@ -1,0 +1,5 @@
+file(GLOB PREVIEW_SRC "*.h" "*.cpp")
+include_directories(../vsal/include)
+add_executable(preview ${PREVIEW_SRC})
+target_link_libraries(preview vsal opencv_core opencv_highgui opencv_imgproc)
+install(TARGETS preview DESTINATION bin)
