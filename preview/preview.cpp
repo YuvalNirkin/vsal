@@ -25,15 +25,6 @@ using namespace boost::program_options;
 /************************************************************************************
 *									Implementation									*
 ************************************************************************************/
-
-inline void pauseExit(int iExitCode = 0)
-{
-#ifdef _DEBUG
-    system("pause");
-#endif
-    exit(iExitCode);
-}
-
 int main(int argc, char** argv)
 {
     // Parse command line arguments
@@ -61,14 +52,14 @@ int main(int argc, char** argv)
         if (vm.count("help")) {
             cout << "Usage: preview [options]" << endl;
             cout << desc << endl;
-            pauseExit(0);
+            exit(0);
         }
         notify(vm);
     }
     catch (const error& e) {
         cout << "Error while parsing command-line arguments: " << e.what() << endl;
         cout << "Use --help to display a list of options." << endl;
-        pauseExit(0);
+        exit(0);
     }
 
     try
@@ -125,8 +116,7 @@ int main(int argc, char** argv)
     catch (exception& e)
     {
         cerr << e.what() << endl;
-        pauseExit(1);
     }
 
-    pauseExit(0);
+    return 0;
 }

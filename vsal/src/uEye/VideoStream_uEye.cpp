@@ -21,7 +21,7 @@ using std::exception;
 /************************************************************************************
 *									Implementation									*
 ************************************************************************************/
-namespace og
+namespace vsal
 {
     VideoStream_uEye::VideoStream_uEye() :
         VideoStream_uEye(0, 0, 0)
@@ -267,4 +267,4 @@ namespace og
         }
     }
 
-}	// namespace og
+}	// namespace vsal

@@ -6,38 +6,31 @@
 #  UEYE_SDK_FOUND        - True if UEye found.
 
 
-SET(UEYE_SDK_ROOT_DIR
-    "${UEYE_SDK_ROOT_DIR}"
-    CACHE
-    PATH
-    "Root directory to search for UEye SDK")
+# Include dir
+find_path(UEYE_SDK_INCLUDE_DIR uEye.h
+	PATHS 
+	$ENV{UEYE_SDK_ROOT}/Develop/include
+	$ENV{UEYE_SDK_ROOT}/include
+	)
 
-# Look for the header file.
-FIND_PATH(UEYE_SDK_INCLUDE_DIRS NAMES uEye.h HINTS 
-	${UEYE_SDK_ROOT_DIR}/include )
-	
-FIND_PATH(UEYE_SDK_INCLUDE_DIRS NAMES uEye.h HINTS 
-	${UEYE_SDK_ROOT_DIR}/include )
+# Finally the library itself
 
 # Determine architecture
-IF(CMAKE_SIZEOF_VOID_P MATCHES "8")
-	FIND_LIBRARY(UEYE_SDK_LIBRARY NAMES uEye_api_64 ueye_tools_64 HINTS ${UEYE_SDK_ROOT_DIR} ${UEYE_SDK_ROOT_DIR}/Lib)
-	FIND_LIBRARY(UEYE_SDK_LIBRARY_DEBUG NAMES uEye_api_64 ueye_tools_64 HINTS ${UEYE_SDK_ROOT_DIR} ${UEYE_SDK_ROOT_DIR}/Lib)
-ELSE()
-    # Look for the library.
-	FIND_LIBRARY(UEYE_SDK_LIBRARY NAMES uEye_api uEye_tools HINTS ${UEYE_SDK_ROOT_DIR} ${UEYE_SDK_ROOT_DIR}/Lib)
-	FIND_LIBRARY(UEYE_SDK_LIBRARY_DEBUG NAMES uEye_api uEye_tools HINTS ${UEYE_SDK_ROOT_DIR} ${UEYE_SDK_ROOT_DIR}/Lib)
-ENDIF()
+if(CMAKE_SIZEOF_VOID_P MATCHES "8")
+	find_library(UEYE_SDK_LIB NAMES uEye_api_64 HINTS $ENV{UEYE_SDK_ROOT}/Develop/Lib $ENV{UEYE_SDK_ROOT}/Lib)
+else()
+	find_library(UEYE_SDK_LIB NAMES uEye_api HINTS $ENV{UEYE_SDK_ROOT}/Develop/Lib $ENV{UEYE_SDK_ROOT}/Lib)
+endif()
 
-MARK_AS_ADVANCED(UEYE_SDK_LIBRARY)
-MARK_AS_ADVANCED(UEYE_SDK_LIBRARY_DEBUG)
+set(UEYE_SDK_LIBRARIES ${UEYE_SDK_LIB} )
+set(UEYE_SDK_INCLUDE_DIRS ${UEYE_SDK_INCLUDE_DIR} )
+
+include(FindPackageHandleStandardArgs)
+# handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(uEyeSDK  FOUND_VAR uEyeSDK_FOUND
+                                  REQUIRED_VARS UEYE_SDK_LIB UEYE_SDK_INCLUDE_DIR
+								  FAIL_MESSAGE "Unable to find uEye SDK! Please set UEYE_SDK_ROOT environment variable to the uEye SDK installation directory.")
 
 
-SET(UEYE_SDK_LIBRARIES optimized ${UEYE_SDK_LIBRARY} debug ${UEYE_SDK_LIBRARY_DEBUG})
-
-# handle the QUIETLY and REQUIRED arguments and set UEYE_SDK_FOUND to TRUE if
-# all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(UEyeSDK DEFAULT_MSG UEYE_SDK_LIBRARIES UEYE_SDK_INCLUDE_DIRS)
-
-MARK_AS_ADVANCED(UEYE_SDK_LIBRARIES UEYE_SDK_INCLUDE_DIRS)
+mark_as_advanced(UEYE_SDK_INCLUDE_DIR UEYE_SDK_LIB )

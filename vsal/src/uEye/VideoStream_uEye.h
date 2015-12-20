@@ -4,8 +4,7 @@
 /************************************************************************************
 *									   Includes										*
 ************************************************************************************/
-#include "VideoStreamExport.h"
-#include "VideoStreamOpenCV.h"
+#include "vsal/VideoStreamOpenCV.h"
 
 /************************************************************************************
 *									 Declarations									*
@@ -15,11 +14,11 @@
 *										Classes										*
 ************************************************************************************/
 
-namespace og
+namespace vsal
 {
     /** Provide a single video stream from IDS uEye camera.
     */
-    class VS_API VideoStream_uEye : public VideoStreamOpenCV
+    class VideoStream_uEye : public VideoStreamOpenCV
     {
     public:
 
@@ -113,7 +112,7 @@ namespace og
         int		m_SeqMode;						// ringbuffer or linear bufer
     };
 
-}	// namespace og
+}	// namespace vsal
 
 
 #endif	// __OG_VIDEO_STREAM_UEYE__

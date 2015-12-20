@@ -1,0 +1,31 @@
+# - Config file for the vsal package
+# It defines the following variables
+#  VSAL_INCLUDE_DIRS - include directories for vsal
+#  VSAL_LIBRARIES    - libraries to link against
+#  VSAL_EXECUTABLE   - the preview executable
+ 
+# Compute paths
+get_filename_component(VSAL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
+#set(VSAL_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+ 
+# Include dir
+find_path(VSAL_INCLUDE_DIRS vsal
+	PATHS 
+	${VSAL_CMAKE_DIR}/../include
+	${VSAL_CMAKE_DIR}/include
+	) 
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET vsal AND NOT vsal_BINARY_DIR)
+  include("${VSAL_CMAKE_DIR}/vsal-targets.cmake")
+endif()
+ 
+# These are IMPORTED targets created by vsal-targets.cmake
+set(VSAL_LIBRARIES vsal)
+if(TARGET preview)
+	set(VSAL_EXECUTABLE preview)
+endif()
+
+if(vsal_FOUND)
+	message(STATUS "Found vsal!")
+endif()

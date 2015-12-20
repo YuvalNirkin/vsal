@@ -11,7 +11,7 @@
 #include <opencv2\imgproc.hpp>
 
 #if SUPPORT_UEYE
-#include "VideoStream_uEye.h"
+#include "uEye/VideoStream_uEye.h"
 #include <uEye.h>
 #endif
 
@@ -95,12 +95,12 @@ namespace vsal
         }
         else return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
     }
-#endif
-
+#else
     VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
     {
         return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
     }
+#endif
 
     VideoStream* VideoStreamFactory::create(const std::string& path)
     {
