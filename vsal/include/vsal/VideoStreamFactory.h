@@ -45,6 +45,10 @@ namespace vsal
         */
         VideoStream* create(const std::string& path);
 
+        /** Create video stream with command line arguments.
+        */
+        VideoStream* create(int argc, char** argv);
+
     private:
 
         /** Private default constructor

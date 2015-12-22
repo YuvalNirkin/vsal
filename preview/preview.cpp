@@ -27,57 +27,18 @@ using namespace boost::program_options;
 ************************************************************************************/
 int main(int argc, char** argv)
 {
-    // Parse command line arguments
-    string inputPath;
-    int device;
-    unsigned int width, height;
-    double fps;
-    try {
-        options_description desc("Allowed options");
-        desc.add_options()
-            ("help", "display the help message")
-            ("input,i", value<string>(&inputPath), "input path")
-            ("device,d", value<int>(&device)->default_value(-1),
-            "device id")
-            ("width,w", value<unsigned int>(&width)->default_value(640),
-            "frame width")
-            ("height,h", value<unsigned int>(&height)->default_value(480),
-            "frame height")
-            ("fps,f", value<double>(&fps)->default_value(30.0),
-            "frames per second")
-            ;
-        variables_map vm;
-        store(command_line_parser(argc, argv).options(desc).
-            positional(positional_options_description().add("input", -1)).run(), vm);
-        if (vm.count("help")) {
-            cout << "Usage: preview [options]" << endl;
-            cout << desc << endl;
-            exit(0);
-        }
-        notify(vm);
-    }
-    catch (const error& e) {
-        cout << "Error while parsing command-line arguments: " << e.what() << endl;
-        cout << "Use --help to display a list of options." << endl;
-        exit(0);
-    }
-
     try
     {
-        bool live = device >= 0;
-
         // Create video source
         vsal::VideoStreamFactory& vsf = vsal::VideoStreamFactory::getInstance();
-        vsal::VideoStreamOpenCV* vs = nullptr;
-        if (live) vs = (vsal::VideoStreamOpenCV*)vsf.create(device, width, height);
-        else if (!inputPath.empty()) vs = (vsal::VideoStreamOpenCV*)vsf.create(inputPath);
-        else throw exception("No video source specified!");
+        vsal::VideoStreamOpenCV* vs = (vsal::VideoStreamOpenCV*)vsf.create(argc, argv);
+        if (vs == nullptr) throw exception("No video source specified!");
 
         // Open video source
         vs->open();
-        width = vs->getWidth();
-        height = vs->getHeight();
-        fps = vs->getFPS();
+        unsigned int width = vs->getWidth();
+        unsigned int height = vs->getHeight();
+        double fps = vs->getFPS();
 
         // Report video parameters
         cout << "Video parameters:" << endl;
@@ -111,7 +72,6 @@ int main(int argc, char** argv)
         // Cleanup
         vs->close();
         if (vs != nullptr) delete vs;
-        vs = nullptr;
     }
     catch (exception& e)
     {

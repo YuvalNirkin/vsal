@@ -52,6 +52,7 @@ namespace vsal
     {
         if (!mFrame.empty()) mFrames.clear();
         mFirstFrame = true;
+        mCurrFrameIndex = 0;
         mFrame.release();
     }
 
