@@ -14,6 +14,7 @@ option(WITH_UEYE "Include IDS uEye support" ON)
 # VSAL build components
 # ===================================================
 option(BUILD_PREVIEW "Build preview application" ON)
+option(BUILD_INTERFACE_CSHARP "Build interface for c#" ON)
 
 # Find dependencies
 # ===================================================
@@ -53,6 +54,11 @@ set(VSAL_TARGETS vsal)
 if(BUILD_PREVIEW)
 	add_subdirectory(preview)
 	set(VSAL_TARGETS ${VSAL_TARGETS} preview)
+endif()
+
+# interfaces
+if(BUILD_INTERFACE_CSHARP)
+	add_subdirectory(interfaces/csharp)
 endif()
 
 # Export configuration
