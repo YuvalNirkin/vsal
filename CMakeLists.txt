@@ -3,6 +3,11 @@ project( vsal )
 
 include(GenerateExportHeader)
 
+# Set version
+set(VSAL_MAJOR_VERSION 0)
+set(VSAL_MINOR_VERSION 9)
+set(VSAL_VERSION ${VSAL_MAJOR_VERSION}.${VSAL_MINOR_VERSION})
+
 # Global configurations
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_DEBUG_POSTFIX "_d")
@@ -14,6 +19,7 @@ option(WITH_UEYE "Include IDS uEye support" ON)
 # VSAL build components
 # ===================================================
 option(BUILD_PREVIEW "Build preview application" ON)
+option(BUILD_DOCS "Build documentation using Doxygen" ON)
 option(BUILD_INTERFACE_CSHARP "Build interface for c#" ON)
 
 # Find dependencies
@@ -39,6 +45,10 @@ if(WITH_UEYE)
 	endif()
 endif()
 
+if(BUILD_DOCS)
+	find_package(Doxygen)
+endif()
+
 # Set build output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -54,6 +64,10 @@ set(VSAL_TARGETS vsal)
 if(BUILD_PREVIEW)
 	add_subdirectory(preview)
 	set(VSAL_TARGETS ${VSAL_TARGETS} preview)
+endif()
+
+if(BUILD_DOCS AND DOXYGEN_FOUND)
+	add_subdirectory(doc)
 endif()
 
 # interfaces
@@ -76,10 +90,13 @@ export(PACKAGE vsal)
 set(CONF_INCLUDE_DIRS "\${VSAL_CMAKE_DIR}/include")
 configure_file(cmake/vsal-config.cmake.in
   "${PROJECT_BINARY_DIR}/vsal-config.cmake" @ONLY)
+configure_file(cmake/vsal-config-version.cmake.in
+  "${PROJECT_BINARY_DIR}/vsal-config-version.cmake" @ONLY)
    
 # Install the vsal-config.cmake and vsal-config-version.cmake
 install(FILES
   "${PROJECT_BINARY_DIR}/vsal-config.cmake"
+  "${PROJECT_BINARY_DIR}/vsal-config-version.cmake"
   DESTINATION "cmake" COMPONENT dev)
  
 # Install the export set for use with the install-tree
