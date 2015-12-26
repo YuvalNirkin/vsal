@@ -17,13 +17,15 @@ set_target_properties(vsal_csharp
 # Installations
 install(TARGETS vsal_csharp
      ARCHIVE DESTINATION lib COMPONENT dev
-	 LIBRARY DESTINATION bin COMPONENT dev
-	 RUNTIME DESTINATION bin COMPONENT dev)
+	 LIBRARY DESTINATION interfaces/csharp/bin COMPONENT dev
+	 RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
+	 
+install(FILES vsal_csharp.i DESTINATION interfaces/csharp)
 	 
 install(
 	CODE "file( REMOVE \"${CMAKE_CURRENT_BINARY_DIR}/vsal_csharp.cs\" )"
     CODE "file( GLOB GeneratedSources \"${CMAKE_CURRENT_BINARY_DIR}/*.cs\" )"
-    CODE "file( INSTALL \${GeneratedSources} DESTINATION \"${CMAKE_INSTALL_PREFIX}/interfaces/csharp\" )"
+    CODE "file( INSTALL \${GeneratedSources} DESTINATION \"${CMAKE_INSTALL_PREFIX}/interfaces/csharp/src\" )"
 )
 
 #install(
