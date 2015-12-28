@@ -10,7 +10,7 @@ set(VSAL_VERSION ${VSAL_MAJOR_VERSION}.${VSAL_MINOR_VERSION})
 
 # Global configurations
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-set(CMAKE_DEBUG_POSTFIX "_d")
+#set(CMAKE_DEBUG_POSTFIX "_d")
 
 # Optional 3rd party components
 # ===================================================

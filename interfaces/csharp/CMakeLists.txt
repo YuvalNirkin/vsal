@@ -4,7 +4,6 @@ include_directories(${CMAKE_SOURCE_DIR}/vsal/include)
 set(CMAKE_SWIG_FLAGS "")
 set_source_files_properties(vsal_csharp.i PROPERTIES CPLUSPLUS ON)
 set(CMAKE_SWIG_FLAGS -namespace vsal)
-#set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/vsal/interfaces/csharp/gen)
 swig_add_module(vsal_csharp csharp vsal_csharp.i)
 target_link_libraries(vsal_csharp vsal)
 set_target_properties(vsal_csharp
@@ -15,10 +14,19 @@ set_target_properties(vsal_csharp
 )
 
 # Installations
-install(TARGETS vsal_csharp
-     ARCHIVE DESTINATION lib COMPONENT dev
-	 LIBRARY DESTINATION interfaces/csharp/bin COMPONENT dev
-	 RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
+#install(TARGETS vsal_csharp
+#    ARCHIVE DESTINATION lib COMPONENT dev
+#	 LIBRARY DESTINATION interfaces/csharp/bin COMPONENT dev
+#	 RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
+
+INSTALL(TARGETS vsal_csharp
+	CONFIGURATIONS Debug
+    LIBRARY DESTINATION interfaces/csharp/bin/debug COMPONENT dev
+	RUNTIME DESTINATION interfaces/csharp/bin/debug COMPONENT dev)
+INSTALL(TARGETS vsal_csharp
+	CONFIGURATIONS Release
+	LIBRARY DESTINATION interfaces/csharp/bin/release COMPONENT dev
+    RUNTIME DESTINATION interfaces/csharp/bin/release COMPONENT dev)
 	 
 install(FILES vsal_csharp.i DESTINATION interfaces/csharp)
 	 
@@ -27,8 +35,3 @@ install(
     CODE "file( GLOB GeneratedSources \"${CMAKE_CURRENT_BINARY_DIR}/*.cs\" )"
     CODE "file( INSTALL \${GeneratedSources} DESTINATION \"${CMAKE_INSTALL_PREFIX}/interfaces/csharp/src\" )"
 )
-
-#install(
- #   CODE "file( GLOB GeneratedSources \"${CMAKE_BINARY_DIR}/interfaces/csharp/*.cs\" )"
- #   CODE "file( INSTALL \${GeneratedSources} DESTINATION \"interfaces/csharp\" )"
-#)
