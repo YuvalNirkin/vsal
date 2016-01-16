@@ -50,7 +50,10 @@ namespace vsal
         SENSORINFO sInfo;
         is_GetSensorInfo(mCamHandle, &sInfo);
 
-        
+        // Make sure the requested resolution is not higher than the maximum possible
+        mRequestedWidth = min(mRequestedWidth, sInfo.nMaxWidth);
+        mRequestedHeight = min(mRequestedHeight, sInfo.nMaxHeight);
+
  //       if ((res = is_LoadParameters(mCamHandle, "Default.ucp")) != IS_SUCCESS)
  //           throw exception("Failed to load parameters!");
             
@@ -65,6 +68,15 @@ namespace vsal
         if ((res = is_SetImageSize(mCamHandle, frameWidth, frameHeight)) != IS_SUCCESS)
             throw exception("Failed to set color mode!");
        */       
+
+        // Set AOI
+        IS_RECT cam_aoi;
+        cam_aoi.s32Width = mRequestedWidth;
+        cam_aoi.s32Height = mRequestedHeight;
+        cam_aoi.s32X = (sInfo.nMaxWidth - cam_aoi.s32Width) / 2;
+        cam_aoi.s32Y = (sInfo.nMaxHeight - cam_aoi.s32Height) / 2;
+        if ((res = is_AOI(mCamHandle, IS_AOI_IMAGE_SET_AOI, &cam_aoi, sizeof(cam_aoi))) != IS_SUCCESS)
+            throw exception("Failed to set Area Of Interest (AOI)");
 
         allocateSequence();
 
@@ -82,10 +94,39 @@ namespace vsal
 
         mBuffer = cv::Mat(sInfo.nMaxHeight, sInfo.nMaxWidth, CV_8U, ppcImgMem);
         */
-        int pixelClock = 86;
+        
+        // Set pixel clock
+        UINT pixelClockList[150];  // No camera has more than 150 different pixel clocks (uEye manual)
+        UINT numberOfSupportedPixelClocks = 0;
+        if ((res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_GET_NUMBER,
+            (void*)&numberOfSupportedPixelClocks, sizeof(numberOfSupportedPixelClocks))) != IS_SUCCESS) {
+            throw exception("Failed to query number of supported pixel clocks!");
+        }
+        if (numberOfSupportedPixelClocks > 0) {
+            ZeroMemory(pixelClockList, sizeof(pixelClockList));
+            if ((res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_GET_LIST,
+                (void*)pixelClockList, numberOfSupportedPixelClocks * sizeof(int))) != IS_SUCCESS) {
+                throw exception("Failed to query list of supported pixel clocks!");
+            }
+        }
+        int minPixelClock = (int)pixelClockList[0];
+        int maxPixelClock = (int)pixelClockList[numberOfSupportedPixelClocks - 1];
+
+        int pixelClock = maxPixelClock;
         if (res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_SET, (void*)&pixelClock, sizeof(int)) != IS_SUCCESS)
             throw exception("Failed to set pixel clock!");
-
+        /*
+        // Set frame rate
+        double minFrameTime, maxFrameTime, intervalFrameTime, newFrameRate;
+        if ((res = is_GetFrameTimeRange(mCamHandle, &minFrameTime,
+            &maxFrameTime, &intervalFrameTime)) != IS_SUCCESS) {
+            throw exception("Failed to query valid frame rate range!");
+        }
+        
+        double maxFrameRate = 1.0 / minFrameTime;
+        if ((res = is_SetFrameRate(mCamHandle, maxFrameRate, &newFrameRate)) != IS_SUCCESS)
+            throw exception("Failed to set frame rate!");
+            */
         //set auto settings
         double on = 1;
         double empty;
@@ -103,6 +144,9 @@ namespace vsal
 
         if ((res = is_SetDisplayMode(mCamHandle, IS_SET_DM_DIB)) != IS_SUCCESS)
             throw exception("Failed to set display mode!");
+
+        // Enable hardware gamma
+        setHardwareGamma(true);
     }
 
     VideoStream_uEye::~VideoStream_uEye()
@@ -204,6 +248,7 @@ namespace vsal
     double VideoStream_uEye::getFPS() const
     {
         double fps;
+        //is_SetFrameRate(mCamHandle, IS_GET_FRAMERATE, &fps);
         is_GetFramesPerSecond(mCamHandle, &fps);
         return fps;
     }
@@ -235,10 +280,15 @@ namespace vsal
         SENSORINFO sInfo;
         is_GetSensorInfo(mCamHandle, &sInfo);
 
+        // Query camera's current resolution settings, for redundancy
+        IS_RECT cam_aoi;
+        if ((res = is_AOI(mCamHandle, IS_AOI_IMAGE_GET_AOI, (void*)&cam_aoi, sizeof(cam_aoi))) != IS_SUCCESS)
+            throw exception("Could not retrieve Area Of Interest (AOI)!");
+
         for (int i = 0; i < SEQUENCE_SIZE; ++i)
         {
             // Allocate buffer memory
-            if ((res = is_AllocImageMem(mCamHandle, sInfo.nMaxWidth, sInfo.nMaxHeight, 8, &m_pcSeqImgMem[i], &m_lSeqMemId[i])) != IS_SUCCESS)
+            if ((res = is_AllocImageMem(mCamHandle, cam_aoi.s32Width, cam_aoi.s32Height, 8, &m_pcSeqImgMem[i], &m_lSeqMemId[i])) != IS_SUCCESS)
                 throw exception("Failed to allocate image memory!");
 
             // Put memory into seq buffer
@@ -247,7 +297,8 @@ namespace vsal
             m_nSeqNumId[i] = i + 1;   // store sequence buffer number Id
         }
 
-        mFrame.create(sInfo.nMaxHeight, sInfo.nMaxWidth, CV_8U);
+        //mFrame.create(sInfo.nMaxHeight, sInfo.nMaxWidth, CV_8U);
+        mFrame.create(cam_aoi.s32Height, cam_aoi.s32Width, CV_8U);
     }
 
     void VideoStream_uEye::checkError(int err)
@@ -265,6 +316,29 @@ namespace vsal
                 throw exception("Camera failed to initialize");
             }
         }
+    }
+
+    bool VideoStream_uEye::getHardwareGamma()
+    {
+        return is_SetHardwareGamma(mCamHandle, IS_GET_HW_GAMMA);
+    }
+
+    bool VideoStream_uEye::setHardwareGamma(bool enable)
+    {
+        if (enable)
+        {
+            if (is_SetHardwareGamma(mCamHandle, IS_SET_HW_GAMMA_ON) != IS_SUCCESS)
+            {
+                is_SetHardwareGamma(mCamHandle, IS_SET_HW_GAMMA_OFF);
+                return false;
+            }
+        }
+        else
+        {
+            is_SetHardwareGamma(mCamHandle, IS_SET_HW_GAMMA_OFF);
+        }
+
+        return true;
     }
 
 }	// namespace vsal

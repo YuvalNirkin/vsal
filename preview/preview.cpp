@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <memory>   // unique_ptr
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 #include <opencv2/core.hpp>
@@ -31,20 +32,19 @@ int main(int argc, char** argv)
     {
         // Create video source
         vsal::VideoStreamFactory& vsf = vsal::VideoStreamFactory::getInstance();
-        vsal::VideoStreamOpenCV* vs = (vsal::VideoStreamOpenCV*)vsf.create(argc, argv);
+        std::unique_ptr<vsal::VideoStreamOpenCV> vs(
+            (vsal::VideoStreamOpenCV*)vsf.create(argc, argv));
         if (vs == nullptr) throw exception("No video source specified!");
 
         // Open video source
-        vs->open();
+        if (!vs->open()) throw exception("Failed to open video source!");
         unsigned int width = vs->getWidth();
         unsigned int height = vs->getHeight();
-        double fps = vs->getFPS();
 
         // Report video parameters
         cout << "Video parameters:" << endl;
         cout << "width = " << width << endl;
         cout << "height = " << height << endl;
-        cout << "fps = " << fps << endl;
 
         // Preview loop
         cv::Mat frame;
@@ -59,6 +59,9 @@ int main(int argc, char** argv)
             cv::putText(frame, (boost::format("Frame count: %d") % ++frameCounter).str(), cv::Point(15, 15),
                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255),
                 1, CV_AA);
+            cv::putText(frame, (boost::format("FPS: %f") % vs->getFPS()).str(), cv::Point(15, 35),
+                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255),
+                1, CV_AA);
             cv::putText(frame, "press any key to stop", cv::Point(10, frame.rows - 20),
                 cv::FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255, 255, 255),
                 1, CV_AA);    
@@ -68,10 +71,6 @@ int main(int argc, char** argv)
             int key = cv::waitKey(1);
             if (key >= 0) break;
         }
-
-        // Cleanup
-        vs->close();
-        if (vs != nullptr) delete vs;
     }
     catch (exception& e)
     {

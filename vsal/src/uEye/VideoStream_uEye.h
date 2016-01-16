@@ -88,6 +88,15 @@ namespace vsal
         */
         cv::Mat getFrameGrayscale();
 
+        /** Get hardware gamma
+        */
+        bool getHardwareGamma();
+
+        /** Set hardware gamma
+            \return true for success else false.
+        */
+        bool setHardwareGamma(bool enable);
+
     private:
         void allocateSequence();
 
