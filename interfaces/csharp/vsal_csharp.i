@@ -17,7 +17,7 @@
     try {
         $action
     } catch (std::exception &e) {
-        std::string s("SensorUtilities error: "), s2(e.what());
+        std::string s("vsal error: "), s2(e.what());
         s = s + s2;
         SWIG_exception(SWIG_RuntimeError, s.c_str());
     } catch (...) {
