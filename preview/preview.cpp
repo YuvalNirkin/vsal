@@ -20,7 +20,8 @@ using std::cout;
 using std::endl;
 using std::cerr;
 using std::string;
-using std::exception;
+//using std::exception;
+using std::runtime_error;
 using namespace boost::program_options;
 
 /************************************************************************************
@@ -29,15 +30,15 @@ using namespace boost::program_options;
 int main(int argc, char** argv)
 {
     try
-    {
+	{
         // Create video source
         vsal::VideoStreamFactory& vsf = vsal::VideoStreamFactory::getInstance();
         std::unique_ptr<vsal::VideoStreamOpenCV> vs(
             (vsal::VideoStreamOpenCV*)vsf.create(argc, argv));
-        if (vs == nullptr) throw exception("No video source specified!");
+        if (vs == nullptr) throw runtime_error("No video source specified!");
 
         // Open video source
-        if (!vs->open()) throw exception("Failed to open video source!");
+        if (!vs->open()) throw runtime_error("Failed to open video source!");
         unsigned int width = vs->getWidth();
         unsigned int height = vs->getHeight();
 
@@ -72,7 +73,7 @@ int main(int argc, char** argv)
             if (key >= 0) break;
         }
     }
-    catch (exception& e)
+    catch (std::exception& e)
     {
         cerr << e.what() << endl;
     }

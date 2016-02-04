@@ -3,7 +3,7 @@
 ************************************************************************************/
 #include "VideoStream_uEye.h"
 #include <exception>
-#include <opencv2\imgproc.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <uEye.h>
 #include <iostream>//
@@ -11,7 +11,8 @@
 /************************************************************************************
 *									  Namespaces									*
 ************************************************************************************/
-using std::exception;
+//using std::exception;
+using std::runtime_error;
 
 /************************************************************************************
 *									 Declarations									*
@@ -44,29 +45,29 @@ namespace vsal
     {
         int res = IS_SUCCESS;
 
-        if ((res = is_InitCamera(&mCamHandle, 0)) != IS_SUCCESS)
-            throw exception("Failed to initialize uEye camera!");
+        if ((res = is_InitCamera((HIDS*)&mCamHandle, 0)) != IS_SUCCESS)
+            throw runtime_error("Failed to initialize uEye camera!");
 
         SENSORINFO sInfo;
         is_GetSensorInfo(mCamHandle, &sInfo);
 
         // Make sure the requested resolution is not higher than the maximum possible
-        mRequestedWidth = min(mRequestedWidth, sInfo.nMaxWidth);
-        mRequestedHeight = min(mRequestedHeight, sInfo.nMaxHeight);
+        mRequestedWidth = std::min(mRequestedWidth, (int)sInfo.nMaxWidth);
+        mRequestedHeight = std::min(mRequestedHeight, (int)sInfo.nMaxHeight);
 
  //       if ((res = is_LoadParameters(mCamHandle, "Default.ucp")) != IS_SUCCESS)
- //           throw exception("Failed to load parameters!");
+ //           throw runtime_error("Failed to load parameters!");
             
         
         if ((res = is_SetColorMode(mCamHandle, IS_CM_MONO8)) != IS_SUCCESS)
-            throw exception("Failed to set color mode!");
+            throw runtime_error("Failed to set color mode!");
         /*
         int nAOISupported = 0;
         if ((res = is_ImageFormat(mCamHandle, IMGFRMT_CMD_GET_ARBITRARY_AOI_SUPPORTED, (void*)&nAOISupported, sizeof(nAOISupported))) != IS_SUCCESS)
-            throw exception("Failed to set image format!");
+            throw runtime_error("Failed to set image format!");
         
         if ((res = is_SetImageSize(mCamHandle, frameWidth, frameHeight)) != IS_SUCCESS)
-            throw exception("Failed to set color mode!");
+            throw runtime_error("Failed to set color mode!");
        */       
 
         // Set AOI
@@ -76,7 +77,7 @@ namespace vsal
         cam_aoi.s32X = (sInfo.nMaxWidth - cam_aoi.s32Width) / 2;
         cam_aoi.s32Y = (sInfo.nMaxHeight - cam_aoi.s32Height) / 2;
         if ((res = is_AOI(mCamHandle, IS_AOI_IMAGE_SET_AOI, &cam_aoi, sizeof(cam_aoi))) != IS_SUCCESS)
-            throw exception("Failed to set Area Of Interest (AOI)");
+            throw runtime_error("Failed to set Area Of Interest (AOI)");
 
         allocateSequence();
 
@@ -85,10 +86,10 @@ namespace vsal
         //int pid;
         //if ((res = is_AllocImageMem(mCamHandle, frameWidth, frameHeight, 8, &ppcImgMem, &pid)) != IS_SUCCESS)
         if ((res = is_AllocImageMem(mCamHandle, sInfo.nMaxWidth, sInfo.nMaxHeight, 8, &ppcImgMem, &mMemoryID)) != IS_SUCCESS)
-            throw exception("Failed to allocate image memory!");
+            throw runtime_error("Failed to allocate image memory!");
 
         if ((res = is_SetImageMem(mCamHandle, ppcImgMem, mMemoryID)) != IS_SUCCESS)
-            throw exception("Failed to set image memory!");
+            throw runtime_error("Failed to set image memory!");
 
         //mFrame.create(sInfo.nMaxHeight, sInfo.nMaxWidth, CV_8U);
 
@@ -100,13 +101,13 @@ namespace vsal
         UINT numberOfSupportedPixelClocks = 0;
         if ((res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_GET_NUMBER,
             (void*)&numberOfSupportedPixelClocks, sizeof(numberOfSupportedPixelClocks))) != IS_SUCCESS) {
-            throw exception("Failed to query number of supported pixel clocks!");
+            throw runtime_error("Failed to query number of supported pixel clocks!");
         }
         if (numberOfSupportedPixelClocks > 0) {
             ZeroMemory(pixelClockList, sizeof(pixelClockList));
             if ((res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_GET_LIST,
                 (void*)pixelClockList, numberOfSupportedPixelClocks * sizeof(int))) != IS_SUCCESS) {
-                throw exception("Failed to query list of supported pixel clocks!");
+                throw runtime_error("Failed to query list of supported pixel clocks!");
             }
         }
         int minPixelClock = (int)pixelClockList[0];
@@ -114,36 +115,36 @@ namespace vsal
 
         int pixelClock = maxPixelClock;
         if (res = is_PixelClock(mCamHandle, IS_PIXELCLOCK_CMD_SET, (void*)&pixelClock, sizeof(int)) != IS_SUCCESS)
-            throw exception("Failed to set pixel clock!");
+            throw runtime_error("Failed to set pixel clock!");
         /*
         // Set frame rate
         double minFrameTime, maxFrameTime, intervalFrameTime, newFrameRate;
         if ((res = is_GetFrameTimeRange(mCamHandle, &minFrameTime,
             &maxFrameTime, &intervalFrameTime)) != IS_SUCCESS) {
-            throw exception("Failed to query valid frame rate range!");
+            throw runtime_error("Failed to query valid frame rate range!");
         }
         
         double maxFrameRate = 1.0 / minFrameTime;
         if ((res = is_SetFrameRate(mCamHandle, maxFrameRate, &newFrameRate)) != IS_SUCCESS)
-            throw exception("Failed to set frame rate!");
+            throw runtime_error("Failed to set frame rate!");
             */
         //set auto settings
         double on = 1;
         double empty;
         /*
         if ((res = is_SetAutoParameter(mCamHandle, IS_SET_ENABLE_AUTO_WHITEBALANCE, &on, &empty)) != IS_SUCCESS)
-            throw exception("Failed to set color mode!");
+            throw runtime_error("Failed to set color mode!");
         if ((res = is_SetAutoParameter(mCamHandle, IS_SET_ENABLE_AUTO_GAIN, &on, &empty)) != IS_SUCCESS)
-            throw exception("Failed to set color mode!");
+            throw runtime_error("Failed to set color mode!");
         */
         //if ((res = is_SetAutoParameter(mCamHandle, IS_SET_ENABLE_AUTO_FRAMERATE, &on, &empty)) != IS_SUCCESS)
-        //    throw exception("Failed to auto framerate!");
+        //    throw runtime_error("Failed to auto framerate!");
 
         if ((res = is_SetAutoParameter(mCamHandle, IS_SET_ENABLE_AUTO_SHUTTER, &on, &empty)) != IS_SUCCESS)
-            throw exception("Failed to set color mode!");
+            throw runtime_error("Failed to set color mode!");
 
         if ((res = is_SetDisplayMode(mCamHandle, IS_SET_DM_DIB)) != IS_SUCCESS)
-            throw exception("Failed to set display mode!");
+            throw runtime_error("Failed to set display mode!");
 
         // Enable hardware gamma
         setHardwareGamma(true);
@@ -158,7 +159,7 @@ namespace vsal
     {
         int res = IS_SUCCESS;
         if ((res = is_CaptureVideo(mCamHandle, IS_WAIT)) != IS_SUCCESS) // IS_WAIT, IS_DONT_WAIT
-            throw exception("Failed to start capturing video!");
+            throw runtime_error("Failed to start capturing video!");
 
         return true;
     }
@@ -283,17 +284,17 @@ namespace vsal
         // Query camera's current resolution settings, for redundancy
         IS_RECT cam_aoi;
         if ((res = is_AOI(mCamHandle, IS_AOI_IMAGE_GET_AOI, (void*)&cam_aoi, sizeof(cam_aoi))) != IS_SUCCESS)
-            throw exception("Could not retrieve Area Of Interest (AOI)!");
+            throw runtime_error("Could not retrieve Area Of Interest (AOI)!");
 
         for (int i = 0; i < SEQUENCE_SIZE; ++i)
         {
             // Allocate buffer memory
             if ((res = is_AllocImageMem(mCamHandle, cam_aoi.s32Width, cam_aoi.s32Height, 8, &m_pcSeqImgMem[i], &m_lSeqMemId[i])) != IS_SUCCESS)
-                throw exception("Failed to allocate image memory!");
+                throw runtime_error("Failed to allocate image memory!");
 
             // Put memory into seq buffer
             if ((res = is_AddToSequence(mCamHandle, m_pcSeqImgMem[i], m_lSeqMemId[i])) != IS_SUCCESS)
-                throw exception("Failed to add to sequence!");
+                throw runtime_error("Failed to add to sequence!");
             m_nSeqNumId[i] = i + 1;   // store sequence buffer number Id
         }
 
@@ -309,11 +310,11 @@ namespace vsal
             if (mCamHandle != 0) {
                 is_GetError(mCamHandle, &err2, &msg);
                 if (err2 != IS_SUCCESS) {
-                    throw exception(msg);
+                    throw runtime_error(msg);
                 }
             }
             else {
-                throw exception("Camera failed to initialize");
+                throw runtime_error("Camera failed to initialize");
             }
         }
     }

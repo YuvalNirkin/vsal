@@ -6,7 +6,7 @@
 ************************************************************************************/
 #include "vsal/vsal_export.h"
 #include "vsal/VideoStream.h"
-#include <opencv2\core.hpp>
+#include <opencv2/core.hpp>
 
 /************************************************************************************
 *									 Declarations									*

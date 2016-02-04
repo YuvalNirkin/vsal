@@ -2,10 +2,10 @@
 *									   Includes										*
 ************************************************************************************/
 #include "VideoStreamImages.h"
-#include <boost\filesystem.hpp>
-#include <boost\regex.hpp>
-#include <opencv2\imgproc.hpp>
-#include <opencv2\highgui.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 /************************************************************************************
 *									  Namespaces									*

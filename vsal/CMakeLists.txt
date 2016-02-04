@@ -15,9 +15,15 @@ source_group("include\\vsal" FILES ${VSAL_INCLUDE})
 include_directories(include)
 add_library(vsal SHARED ${VSAL_SRC})
 target_link_libraries(vsal PRIVATE opencv_core opencv_imgproc opencv_imgcodecs opencv_videoio ${VSAL_OPT_LIBS})
+if(UNIX)
+	target_link_libraries(vsal PRIVATE ${Boost_LIBRARIES})
+endif(UNIX)
 set_target_properties(vsal PROPERTIES DEBUG_POSTFIX _d)
 
 # Add export header
+if(UNIX)
+	set(USE_COMPILER_HIDDEN_VISIBILITY OFF)
+endif(UNIX)
 generate_export_header(vsal EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/include/vsal/vsal_export.h)
 install(FILES ${PROJECT_BINARY_DIR}/include/vsal/vsal_export.h DESTINATION include/vsal)
 

@@ -12,6 +12,10 @@ set(VSAL_VERSION ${VSAL_MAJOR_VERSION}.${VSAL_MINOR_VERSION})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 #set(CMAKE_DEBUG_POSTFIX "_d")
 
+if(UNIX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
 # Optional 3rd party components
 # ===================================================
 option(WITH_UEYE "Include IDS uEye support" ON)
@@ -25,12 +29,17 @@ option(BUILD_INTERFACE_CSHARP "Build interface for c#" ON)
 # Find dependencies
 # ===================================================
 # Boost
-set(Boost_USE_STATIC_LIBS ON)	# only find static libs
+if(MSVC)
+	set(Boost_USE_STATIC_LIBS ON)	# only find static libs
+endif(MSVC)
 set(Boost_USE_MULTITHREADED ON)
 find_package( Boost REQUIRED filesystem regex program_options)
 if(Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
-	link_directories(${Boost_LIBRARY_DIRS})
+	if(MSVC)
+		# On Windows the Boost libraries are automatically linked
+		link_directories(${Boost_LIBRARY_DIRS})
+	endif(MSVC)	
 endif()
 
 # OpenCV

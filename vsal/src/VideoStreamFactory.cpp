@@ -10,7 +10,7 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
-#include <opencv2\imgproc.hpp>
+#include <opencv2/imgproc.hpp>
 
 #if SUPPORT_UEYE
 #include "uEye/VideoStream_uEye.h"
