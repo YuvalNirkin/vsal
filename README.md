@@ -8,7 +8,7 @@ Link for the demonstration video:
 ## Dependencies
 1. [Boost](http://www.boost.org/)
 2. [OpenCV](http://opencv.org/)
-3. [IDS uEye SDK](https://en.ids-imaging.com/download-ueye-win32.html) (Optional)
+3. [IDS uEye SDK](http://www.mathworks.com/products/matlab/)
 
 ## Credit
 Created by Yuval Nirkin.
