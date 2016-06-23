@@ -9,7 +9,7 @@ get_filename_component(VSAL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
 #set(VSAL_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
  
 # Include dir
-find_path(VSAL_INCLUDE_DIRS vsal
+find_path(VSAL_INCLUDE_DIRS vsal/VideoStream.h
 	PATHS 
 	${VSAL_CMAKE_DIR}/../include
 	${VSAL_CMAKE_DIR}/include
