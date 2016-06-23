@@ -2,14 +2,18 @@
 *									   Includes										*
 ************************************************************************************/
 #include "vsal/VideoStreamFactory.h"
+#ifndef __ANDROID__
 #include "VideoStreamOpenCVImpl.h"
 #include "VideoStreamImages.h"
+#endif // !__ANDROID__
 
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#ifndef __ANDROID__
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
+#endif // !__ANDROID__
 #include <opencv2/imgproc.hpp>
 
 #if SUPPORT_UEYE
@@ -21,8 +25,10 @@
 *									  Namespaces									*
 ************************************************************************************/
 using std::vector;
+#ifndef __ANDROID__
 using namespace boost::filesystem;
 using namespace boost::program_options;
+#endif // !__ANDROID__
 
 /************************************************************************************
 *									 Declarations									*
@@ -98,60 +104,77 @@ namespace vsal
         }
         else return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
     }
-#else
+#elif __ANDROID__
     VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
     {
-        return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
+		return nullptr;
     }
+#else
+	VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
+	{
+		return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
+	}
 #endif
 
-    VideoStream* VideoStreamFactory::create(const std::string& path)
-    {
-        if (is_directory(path)) return new VideoStreamImages(path);
-        else return new VideoStreamOpenCVImpl(path);
-    }
+#if __ANDROID__
+	VideoStream* VideoStreamFactory::create(const std::string& path)
+	{
+		return nullptr;
+	}
 
-    VideoStream* VideoStreamFactory::create(int argc, char** argv)
-    {
-        // Parse command line arguments
-        std::string inputPath;
-        int device;
-        unsigned int width, height;
-        double fps;
-        try {
-            options_description desc("Allowed options");
-            desc.add_options()
-                ("help", "display the help message")
-                ("input,i", value<std::string>(&inputPath), "input path")
-                ("device,d", value<int>(&device)->default_value(-1),
-                "device id")
-                ("width,w", value<unsigned int>(&width)->default_value(640),
-                "frame width")
-                ("height,h", value<unsigned int>(&height)->default_value(480),
-                "frame height")
-                ("fps,f", value<double>(&fps)->default_value(30.0),
-                "frames per second")
-                ;
-            variables_map vm;
-            store(command_line_parser(argc, argv).options(desc).
-                positional(positional_options_description().add("input", -1)).run(), vm);
-            if (vm.count("help")) {
-                std::cout << "Usage: preview [options]" << std::endl;
-                std::cout << desc << std::endl;
-                return nullptr;
-            }
-            notify(vm);
-        }
-        catch (const error& e) {
-            std::cout << "Error while parsing command-line arguments: " << e.what() << std::endl;
-            std::cout << "Use --help to display a list of options." << std::endl;
-            return nullptr;
-        }
+	VideoStream* VideoStreamFactory::create(int argc, char** argv)
+	{
+		return nullptr;
+	}
+#else
+	VideoStream* VideoStreamFactory::create(const std::string& path)
+	{
+		if (is_directory(path)) return new VideoStreamImages(path);
+		else return new VideoStreamOpenCVImpl(path);
+	}
 
-        // Create video source
-        if (device >= 0) return create(device, width, height);
-        else if (!inputPath.empty()) return create(inputPath);
-        else return nullptr;
-    }
+	VideoStream* VideoStreamFactory::create(int argc, char** argv)
+	{
+		// Parse command line arguments
+		std::string inputPath;
+		int device;
+		unsigned int width, height;
+		double fps;
+		try {
+			options_description desc("Allowed options");
+			desc.add_options()
+				("help", "display the help message")
+				("input,i", value<std::string>(&inputPath), "input path")
+				("device,d", value<int>(&device)->default_value(-1),
+					"device id")
+					("width,w", value<unsigned int>(&width)->default_value(640),
+						"frame width")
+						("height,h", value<unsigned int>(&height)->default_value(480),
+							"frame height")
+							("fps,f", value<double>(&fps)->default_value(30.0),
+								"frames per second")
+				;
+			variables_map vm;
+			store(command_line_parser(argc, argv).options(desc).
+				positional(positional_options_description().add("input", -1)).run(), vm);
+			if (vm.count("help")) {
+				std::cout << "Usage: preview [options]" << std::endl;
+				std::cout << desc << std::endl;
+				return nullptr;
+			}
+			notify(vm);
+		}
+		catch (const error& e) {
+			std::cout << "Error while parsing command-line arguments: " << e.what() << std::endl;
+			std::cout << "Use --help to display a list of options." << std::endl;
+			return nullptr;
+		}
+
+		// Create video source
+		if (device >= 0) return create(device, width, height);
+		else if (!inputPath.empty()) return create(inputPath);
+		else return nullptr;
+	}
+#endif  
 
 }	// namespace vsal
