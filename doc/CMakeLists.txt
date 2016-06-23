@@ -4,9 +4,9 @@
 
 # additional config
 set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
-set(DOXYGEN_INPUT_PATH "${CMAKE_SOURCE_DIR}/vsal/include/vsal")
+set(DOXYGEN_INPUT_PATH "\"${CMAKE_SOURCE_DIR}/vsal/include/vsal\"")
 #set(DOXYGEN_OUTPUT_PATH "doxygen")
-set(DOXYGEN_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
+set(DOXYGEN_OUTPUT_PATH "\"${CMAKE_CURRENT_BINARY_DIR}/doxygen\"")
 
 # Write doxygen configuration file
 configure_file(Doxyfile.in ${doxyfile} @ONLY)
