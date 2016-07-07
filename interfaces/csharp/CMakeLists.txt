@@ -1,4 +1,3 @@
-find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 include_directories(${CMAKE_SOURCE_DIR}/vsal/include)
 set(CMAKE_SWIG_FLAGS "")

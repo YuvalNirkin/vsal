@@ -39,11 +39,16 @@ namespace vsal
             \param frameHeight The height in pixels for each of the incoming frames
             \return A video stream than can be tracked from.
         */
-        VideoStream* create(int device, int frameWidth, int frameHeight);
+        VideoStream* create(int device, int frameWidth = 0, int frameHeight = 0);
 
         /** Create video stream from video file or a directory of images.
         */
         VideoStream* create(const std::string& path);
+
+		/** Create video stream from video file, a directory of images or from camera.
+		*/
+		VideoStream* create(const std::string& path, int device,
+			int frameWidth = 0, int frameHeight = 0);
 
         /** Create video stream with command line arguments.
         */

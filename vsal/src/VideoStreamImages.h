@@ -28,7 +28,7 @@ namespace vsal
             \param dirPath Path to a directory to read the images from.
             \param fps The fake frames per second to use.
         */
-        VideoStreamImages(const std::string& dirPath, double fps = 30);
+        VideoStreamImages(const std::string& path, double fps = 30);
 
         /** Destructor.
         */
@@ -79,11 +79,21 @@ namespace vsal
         */
         cv::Mat getFrameGrayscale();
 
-    private:
-        void getFrames(const std::string& dirPath, std::vector<std::string>& frames) const;
+		static bool is_image(const std::string& path);
+
+		static bool is_pattern(const std::string& path);
+
+		static bool is_valid_pattern(const std::string& path);
 
     private:
-        std::string mDirPath;
+        void getFrames(const std::string& path, std::vector<std::string>& frames) const;
+		void getFramesFromDir(const std::string& dirPath,
+			std::vector<std::string>& frames) const;
+		void getFramesFromPattern(const std::string& path,
+			std::vector<std::string>& frames) const;
+
+    private:
+        std::string mPath;
         int mWidth, mHeight;
         unsigned int mCurrFrameIndex;
         double mFPS;

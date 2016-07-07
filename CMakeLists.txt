@@ -26,7 +26,7 @@ option(WITH_UEYE "Include IDS uEye support" ON)
 # ===================================================
 option(BUILD_PREVIEW "Build preview application" ON)
 option(BUILD_DOCS "Build documentation using Doxygen" ON)
-option(BUILD_INTERFACE_CSHARP "Build interface for c#" ON)
+option(BUILD_INTERFACE_CSHARP "Build interface for C#" ON)
 
 # Find dependencies
 # ===================================================
@@ -52,12 +52,26 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 if(WITH_UEYE)
 	find_package(uEyeSDK)
 	if(NOT uEyeSDK_FOUND)
-		message(FATAL_ERROR "Couldn't find uEye SDK! To build without uEye support set WITH_UEYE to OFF")
+		set(WITH_UEYE OFF CACHE BOOL "Include IDS uEye support" FORCE )
 	endif()
 endif()
 
+# Docs
 if(BUILD_DOCS)
 	find_package(Doxygen)
+	if(NOT DOXYGEN_FOUND)
+		message(STATUS "The documentation won't be build.")
+		set(BUILD_DOCS OFF CACHE BOOL "Build documentation using Doxygen" FORCE )
+	endif()
+endif()
+
+# Interfaces
+if(BUILD_INTERFACE_CSHARP)
+	find_package(SWIG)
+	if(NOT SWIG_FOUND)
+		message(STATUS "C# interface won't be build.")
+		set(BUILD_INTERFACE_CSHARP OFF CACHE BOOL "Build interface for C#" FORCE )	
+	endif()
 endif()
 
 # Set build output directories
@@ -77,7 +91,7 @@ if(BUILD_PREVIEW)
 	set(VSAL_TARGETS ${VSAL_TARGETS} preview)
 endif()
 
-if(BUILD_DOCS AND DOXYGEN_FOUND)
+if(BUILD_DOCS)
 	add_subdirectory(doc)
 endif()
 

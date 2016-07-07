@@ -126,11 +126,30 @@ namespace vsal
 	{
 		return nullptr;
 	}
+
+	VideoStream* VideoStreamFactory::create(const std::string& path, int device,
+		int frameWidth = 0, int frameHeight = 0)
+	{
+		return nullptr;
+	}
 #else
 	VideoStream* VideoStreamFactory::create(const std::string& path)
 	{
-		if (is_directory(path)) return new VideoStreamImages(path);
-		else return new VideoStreamOpenCVImpl(path);
+		if (is_regular_file(path))
+		{
+			if(VideoStreamImages::is_image(path)) return new VideoStreamImages(path);
+			else return new VideoStreamOpenCVImpl(path);
+		}
+		else return new VideoStreamImages(path);
+	}
+
+	VideoStream* VideoStreamFactory::create(const std::string& path, int device,
+		int frameWidth, int frameHeight)
+	{
+		// Create video source
+		if (device >= 0) return create(device, frameWidth, frameHeight);
+		else if (!path.empty()) return create(path);
+		else return nullptr;
 	}
 
 	VideoStream* VideoStreamFactory::create(int argc, char** argv)
@@ -147,12 +166,12 @@ namespace vsal
 				("input,i", value<std::string>(&inputPath), "input path")
 				("device,d", value<int>(&device)->default_value(-1),
 					"device id")
-					("width,w", value<unsigned int>(&width)->default_value(640),
-						"frame width")
-						("height,h", value<unsigned int>(&height)->default_value(480),
-							"frame height")
-							("fps,f", value<double>(&fps)->default_value(30.0),
-								"frames per second")
+				("width,w", value<unsigned int>(&width)->default_value(640),
+					"frame width")
+				("height,h", value<unsigned int>(&height)->default_value(480),
+					"frame height")
+				("fps,f", value<double>(&fps)->default_value(30.0),
+					"frames per second")
 				;
 			variables_map vm;
 			store(command_line_parser(argc, argv).options(desc).
@@ -171,9 +190,7 @@ namespace vsal
 		}
 
 		// Create video source
-		if (device >= 0) return create(device, width, height);
-		else if (!inputPath.empty()) return create(inputPath);
-		else return nullptr;
+		return create(inputPath, device, width, height);
 	}
 #endif  
 
