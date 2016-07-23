@@ -4,8 +4,8 @@ project( vsal )
 include(GenerateExportHeader)
 
 # Set version
-set(VSAL_MAJOR_VERSION 0)
-set(VSAL_MINOR_VERSION 9)
+set(VSAL_MAJOR_VERSION 1)
+set(VSAL_MINOR_VERSION 0)
 set(VSAL_VERSION ${VSAL_MAJOR_VERSION}.${VSAL_MINOR_VERSION})
 
 # Global configurations
