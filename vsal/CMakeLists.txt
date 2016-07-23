@@ -1,7 +1,13 @@
+# Validation
+if(NOT uEyeSDK_FOUND)
+	message(STATUS "vsal will be built without IDS uEye support.")
+endif()
+
+# Source
 file(GLOB VSAL_INCLUDE "include/vsal/*.h")
 file(GLOB VSAL_SRC "src/*.h" "src/*.cpp")
 list(APPEND VSAL_SRC ${VSAL_INCLUDE})
-if(WITH_UEYE)
+if(uEyeSDK_FOUND)
 	file(GLOB VSAL_UEYE_SRC "src/uEye/*.h" "src/uEye/*.cpp")
 	list(APPEND VSAL_SRC ${VSAL_UEYE_SRC})
 	add_definitions(-DSUPPORT_UEYE)

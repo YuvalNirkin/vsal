@@ -51,9 +51,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # uEyeSDK
 if(WITH_UEYE)
 	find_package(uEyeSDK)
-	if(NOT uEyeSDK_FOUND)
-		set(WITH_UEYE OFF CACHE BOOL "Include IDS uEye support" FORCE )
-	endif()
 endif()
 
 # Docs
