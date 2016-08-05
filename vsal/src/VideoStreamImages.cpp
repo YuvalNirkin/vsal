@@ -30,9 +30,9 @@ namespace vsal
 		mPath(path),
         mWidth(0), mHeight(0),
         mCurrFrameIndex(0),
+		mNextFrameIndex(0),
         mFPS(fps),
-        mDt(1.0/fps),
-        mFirstFrame(true)
+        mDt(1.0/fps)
     {
     }
 
@@ -55,24 +55,25 @@ namespace vsal
     void VideoStreamImages::close()
     {
         if (!mFrame.empty()) mFrames.clear();
-        mFirstFrame = true;
-        mCurrFrameIndex = 0;
+        mCurrFrameIndex = mNextFrameIndex = 0;
         mFrame.release();
     }
 
     bool VideoStreamImages::read()
     {
         if (mFrames.empty()) return false;
-        if (mFirstFrame) // First frame (we already read it)
-        {
-            mFirstFrame = false;
-            return true;
-        }
-        if ((mCurrFrameIndex + 1) >= mFrames.size()) return false;
+		if (mNextFrameIndex == mCurrFrameIndex)
+		{
+			++mNextFrameIndex;
+			return true;
+		}
+		if (mNextFrameIndex >= mFrames.size()) return false;
 
-        // Read next frame
-        mFrame = cv::imread(mFrames[++mCurrFrameIndex]);
-        return true;
+		// Read next frame
+		mFrame = cv::imread(mFrames[mNextFrameIndex]);
+		mCurrFrameIndex = mNextFrameIndex;
+		++mNextFrameIndex;
+		return true;
     }
 
     int VideoStreamImages::getWidth() const
@@ -99,6 +100,16 @@ namespace vsal
     {
         memcpy(data, mFrame.data, mFrame.total() * mFrame.elemSize());
     }
+
+	bool VideoStreamImages::isLive() const
+	{
+		return false;
+	}
+
+	bool VideoStreamImages::isOpened() const
+	{
+		return !mFrames.empty();
+	}
 
     bool VideoStreamImages::isUpdated()
     {
@@ -165,6 +176,21 @@ namespace vsal
 
 			frames.push_back(it->path().string());
 		}
+	}
+
+	size_t VideoStreamImages::getFrameIndex() const
+	{
+		return mCurrFrameIndex;
+	}
+
+	void VideoStreamImages::seek(size_t index)
+	{
+		mNextFrameIndex = index;
+	}
+
+	size_t VideoStreamImages::size() const
+	{
+		return mFrames.size();
 	}
 
 	bool VideoStreamImages::is_image(const std::string& path)

@@ -25,12 +25,12 @@ using std::runtime_error;
 namespace vsal
 {
     VideoStream_uEye::VideoStream_uEye() :
-        VideoStream_uEye(0, 0, 0)
+        VideoStream_uEye(0, 0, 0), mInitialized(false)
     {
     }
 
     VideoStream_uEye::VideoStream_uEye(int frameWidth, int frameHeight) :
-        VideoStream_uEye(0, frameWidth, frameHeight)
+        VideoStream_uEye(0, frameWidth, frameHeight), mInitialized(false)
     {
     }
 
@@ -41,7 +41,8 @@ namespace vsal
         mCamHandle(0),
         mMemoryID(0),
         mFrameCounter(0),
-        mUpdated(false)
+        mUpdated(false),
+		mInitialized(false)
     {
         int res = IS_SUCCESS;
 
@@ -160,6 +161,7 @@ namespace vsal
         int res = IS_SUCCESS;
         if ((res = is_CaptureVideo(mCamHandle, IS_WAIT)) != IS_SUCCESS) // IS_WAIT, IS_DONT_WAIT
             throw runtime_error("Failed to start capturing video!");
+		mInitialized = (res == IS_SUCCESS);
 
         return true;
     }
@@ -180,6 +182,8 @@ namespace vsal
 
         // Memory and events are automatically released
         is_ExitCamera(mCamHandle);
+
+		mInitialized = false;
     }
 
     bool VideoStream_uEye::read()
@@ -230,7 +234,6 @@ namespace vsal
         return true;
     }
 
-
     int VideoStream_uEye::getWidth() const
     {
         return mFrame.cols;
@@ -259,6 +262,16 @@ namespace vsal
         memcpy(data, mFrame.data, mFrame.total() * mFrame.elemSize());
     }
 
+	bool VideoStream_uEye::isLive() const
+	{
+		return true;
+	}
+
+	bool VideoStream_uEye::isOpened() const
+	{
+		return mInitialized;
+	}
+
     bool VideoStream_uEye::isUpdated()
     {
         return mUpdated;
@@ -273,6 +286,20 @@ namespace vsal
     {
         return mFrame;
     }
+
+	size_t VideoStream_uEye::getFrameIndex() const
+	{
+		return (size_t)mFrameCounter;
+	}
+
+	void VideoStream_uEye::seek(size_t index)
+	{
+	}
+
+	size_t VideoStream_uEye::size() const
+	{
+		return (size_t)mFrameCounter;
+	}
 
     void VideoStream_uEye::allocateSequence()
     {

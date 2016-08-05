@@ -1,0 +1,8 @@
+include_directories(../vsal/include)
+add_executable(vsal_player vsal_player.cpp)
+target_link_libraries(vsal_player vsal opencv_core opencv_highgui opencv_imgproc)
+if(UNIX)
+	target_link_libraries(vsal_player ${Boost_LIBRARIES})
+endif(UNIX)
+set_target_properties(vsal_player PROPERTIES DEBUG_POSTFIX _d)
+install(TARGETS vsal_player EXPORT vsal-targets DESTINATION bin COMPONENT bin)

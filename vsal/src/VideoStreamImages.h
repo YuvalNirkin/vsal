@@ -1,5 +1,5 @@
-#ifndef __OG_VIDEO_STREAM_IMAGES__
-#define __OG_VIDEO_STREAM_IMAGES__
+#ifndef __VSAL_VIDEO_STREAM_IMAGES__
+#define __VSAL_VIDEO_STREAM_IMAGES__
 
 /************************************************************************************
 *									   Includes										*
@@ -26,9 +26,9 @@ namespace vsal
         /** Create video stream from images in the specified directory.
             All images must be in the same resolution.
             \param dirPath Path to a directory to read the images from.
-            \param fps The fake frames per second to use.
+            \param fps Fake frames per second for displaying.
         */
-        VideoStreamImages(const std::string& path, double fps = 30);
+        VideoStreamImages(const std::string& path, double fps = 0);
 
         /** Destructor.
         */
@@ -67,6 +67,14 @@ namespace vsal
         */
         void getFrameData(unsigned char* data) const;
 
+		/** Returns true if the video stream is from a live camera feed.
+		*/
+		bool isLive() const;
+
+		/** Returns true if video stream has been initialized already.
+		*/
+		bool isOpened() const;
+
         /** Check whether a new frame was captured.
         */
         bool isUpdated();
@@ -78,6 +86,18 @@ namespace vsal
         /** Get the last grabbed frame without copying as grayscale.
         */
         cv::Mat getFrameGrayscale();
+
+		/** Get the index of the last grabbed frame.
+		*/
+		size_t getFrameIndex() const;
+
+		/** 0-based index of the frame to be decoded/captured next.
+		*/
+		void seek(size_t index);
+
+		/**	Total number of frames or the number of frames read in case of a live feed.
+		*/
+		size_t size() const;
 
 		static bool is_image(const std::string& path);
 
@@ -95,10 +115,9 @@ namespace vsal
     private:
         std::string mPath;
         int mWidth, mHeight;
-        unsigned int mCurrFrameIndex;
+        unsigned int mCurrFrameIndex, mNextFrameIndex;
         double mFPS;
         double mDt;
-        bool mFirstFrame;
         std::vector<std::string> mFrames;
         cv::Mat mFrame;
     };
@@ -106,4 +125,4 @@ namespace vsal
 }	// namespace vsal
 
 
-#endif	// __OG_VIDEO_STREAM_IMAGES__
+#endif	// __VSAL_VIDEO_STREAM_IMAGES__

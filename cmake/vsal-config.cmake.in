@@ -2,7 +2,7 @@
 # It defines the following variables
 #  VSAL_INCLUDE_DIRS - include directories for vsal
 #  VSAL_LIBRARIES    - libraries to link against
-#  VSAL_EXECUTABLE   - the preview executable
+#  VSAL_EXECUTABLE   - the vsal player executable
  
 # Compute paths
 get_filename_component(VSAL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
@@ -22,8 +22,8 @@ endif()
  
 # These are IMPORTED targets created by vsal-targets.cmake
 set(VSAL_LIBRARIES vsal)
-if(TARGET preview)
-	set(VSAL_EXECUTABLE preview)
+if(TARGET vsal_player)
+	set(VSAL_EXECUTABLE vsal_player)
 endif()
 
 if(vsal_FOUND)

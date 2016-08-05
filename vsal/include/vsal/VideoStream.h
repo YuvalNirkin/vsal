@@ -1,5 +1,5 @@
-#ifndef __OG_VIDEO_STREAM__
-#define __OG_VIDEO_STREAM__
+#ifndef __VSAL_VIDEO_STREAM__
+#define __VSAL_VIDEO_STREAM__
 
 /************************************************************************************
 *									   Includes										*
@@ -59,12 +59,32 @@ namespace vsal
 		*/
         virtual void getFrameData(unsigned char* data) const = 0;
 
+		/** Get the index of the last grabbed frame.
+		*/
+		virtual size_t getFrameIndex() const = 0;
+
+		/** Returns true if the video stream is from a live camera feed.
+		*/
+		virtual bool isLive() const = 0;
+
+		/** Returns true if video stream has been initialized already.
+		*/
+		virtual bool isOpened() const = 0;
+
         /** Check whether a new frame was captured.
         */
         virtual bool isUpdated() = 0;
+
+		/** 0-based index of the frame to be decoded/captured next.
+		*/
+		virtual void seek(size_t index) = 0;
+
+		/**	Total number of frames or the number of frames read in case of a live feed.
+		*/
+		virtual size_t size() const = 0;
 	};
 
 }	// namespace vsal
 
 
-#endif	// __OG_VIDEO_STREAM__
+#endif	// __VSAL_VIDEO_STREAM__

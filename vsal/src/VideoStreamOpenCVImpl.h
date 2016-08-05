@@ -1,5 +1,5 @@
-#ifndef __OG_VIDEO_STREAM_OPENCV_IMPL__
-#define __OG_VIDEO_STREAM_OPENCV_IMPL__
+#ifndef __VSAL_VIDEO_STREAM_OPENCV_IMPL__
+#define __VSAL_VIDEO_STREAM_OPENCV_IMPL__
 
 /************************************************************************************
 *									   Includes										*
@@ -27,8 +27,10 @@ namespace vsal
         \param device Device's id
         \param frameWidth The width in pixels for each of the incoming frames
         \param frameHeight The height in pixels for each of the incoming frames
+		\param fps Frames per second.
         */
-        VideoStreamOpenCVImpl(int device, int frameWidth, int frameHeight);
+        VideoStreamOpenCVImpl(int device, int frameWidth, int frameHeight,
+			double fps = 0);
 
         /** Create video stream from a video file.
         \param filePath Path to the video file
@@ -72,6 +74,14 @@ namespace vsal
         */
         void getFrameData(unsigned char* data) const;
 
+		/** Returns true if the video stream is from a live camera feed.
+		*/
+		bool isLive() const;
+
+		/** Returns true if video stream has been initialized already.
+		*/
+		bool isOpened() const;
+
         /** Check whether a new frame was captured.
         */
         bool isUpdated();
@@ -84,6 +94,18 @@ namespace vsal
         */
         cv::Mat getFrameGrayscale();
 
+		/** Get the index of the last grabbed frame.
+		*/
+		size_t getFrameIndex() const;
+
+		/** 0-based index of the frame to be decoded/captured next.
+		*/
+		void seek(size_t index);
+
+		/**	Total number of frames or the number of frames read in case of a live feed.
+		*/
+		size_t size() const;
+
     private:
         int mDevice;
         int mRequestedWidth, mRequestedHeight;
@@ -92,9 +114,11 @@ namespace vsal
         cv::VideoCapture mCap;
         double mFPS;
         double mTimestamp;
+		size_t mFrameIndex;
+		size_t mTotalFrames;
     };
 
 }	// namespace vsal
 
 
-#endif	// __OG_VIDEO_STREAM_OPENCV_IMPL__
+#endif	// __VSAL_VIDEO_STREAM_OPENCV_IMPL__

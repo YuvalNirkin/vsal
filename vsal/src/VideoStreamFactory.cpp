@@ -87,7 +87,8 @@ namespace vsal
         return 0;
     }
 
-    VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
+    VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight,
+		double fps)
     {
         std::vector<unsigned int> ueye_serial, ueye_dev_id;
         unsigned int camCount = uEyeListCameras(ueye_serial, ueye_dev_id);
@@ -102,22 +103,24 @@ namespace vsal
             }
             else return new VideoStream_uEye(device, frameWidth, frameHeight);
         }
-        else return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
+        else return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight, fps);
     }
 #elif __ANDROID__
-    VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
+    VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight,
+		double fps)
     {
 		return nullptr;
     }
 #else
-	VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight)
+	VideoStream* VideoStreamFactory::create(int device, int frameWidth, int frameHeight,
+		double fps)
 	{
-		return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight);
+		return new VideoStreamOpenCVImpl(device, frameWidth, frameHeight, fps);
 	}
 #endif
 
 #if __ANDROID__
-	VideoStream* VideoStreamFactory::create(const std::string& path)
+	VideoStream* VideoStreamFactory::create(const std::string& path, double fps)
 	{
 		return nullptr;
 	}
@@ -128,27 +131,27 @@ namespace vsal
 	}
 
 	VideoStream* VideoStreamFactory::create(const std::string& path, int device,
-		int frameWidth = 0, int frameHeight = 0)
+		int frameWidth, int frameHeight, double fps)
 	{
 		return nullptr;
 	}
 #else
-	VideoStream* VideoStreamFactory::create(const std::string& path)
+	VideoStream* VideoStreamFactory::create(const std::string& path, double fps)
 	{
 		if (is_regular_file(path))
 		{
-			if(VideoStreamImages::is_image(path)) return new VideoStreamImages(path);
+			if(VideoStreamImages::is_image(path)) return new VideoStreamImages(path, fps);
 			else return new VideoStreamOpenCVImpl(path);
 		}
 		else return new VideoStreamImages(path);
 	}
 
 	VideoStream* VideoStreamFactory::create(const std::string& path, int device,
-		int frameWidth, int frameHeight)
+		int frameWidth, int frameHeight, double fps)
 	{
 		// Create video source
 		if (device >= 0) return create(device, frameWidth, frameHeight);
-		else if (!path.empty()) return create(path);
+		else if (!path.empty()) return create(path, fps);
 		else return nullptr;
 	}
 
@@ -170,7 +173,7 @@ namespace vsal
 					"frame width")
 				("height,h", value<unsigned int>(&height)->default_value(480),
 					"frame height")
-				("fps,f", value<double>(&fps)->default_value(30.0),
+				("fps,f", value<double>(&fps)->default_value(0.0),
 					"frames per second")
 				;
 			variables_map vm;
@@ -190,7 +193,7 @@ namespace vsal
 		}
 
 		// Create video source
-		return create(inputPath, device, width, height);
+		return create(inputPath, device, width, height, fps);
 	}
 #endif  
 

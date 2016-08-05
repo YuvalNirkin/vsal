@@ -76,6 +76,14 @@ namespace vsal
         */
         void getFrameData(unsigned char* data) const;
 
+		/** Returns true if the video stream is from a live camera feed.
+		*/
+		bool isLive() const;
+
+		/** Returns true if video stream has been initialized already.
+		*/
+		bool isOpened() const;
+
         /** Check whether a new frame was captured.
         */
         bool isUpdated();
@@ -88,6 +96,10 @@ namespace vsal
         */
         cv::Mat getFrameGrayscale();
 
+		/** Get the index of the last grabbed frame.
+		*/
+		size_t getFrameIndex() const;
+
         /** Get hardware gamma
         */
         bool getHardwareGamma();
@@ -96,6 +108,16 @@ namespace vsal
             \return true for success else false.
         */
         bool setHardwareGamma(bool enable);
+
+		
+
+		/** 0-based index of the frame to be decoded/captured next.
+		*/
+		void seek(size_t index);
+
+		/**	Total number of frames or the number of frames read in case of a live feed.
+		*/
+		size_t size() const;
 
     private:
         void allocateSequence();
@@ -112,6 +134,7 @@ namespace vsal
         int mMemoryID;
         unsigned long long mFrameCounter;
         bool mUpdated;
+		bool mInitialized;
 
         // Memory and sequence buffers
         static const int SEQUENCE_SIZE = 2;

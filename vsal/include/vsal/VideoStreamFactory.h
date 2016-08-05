@@ -1,5 +1,5 @@
-#ifndef __OG_VIDEO_STREAM_FACTORY__
-#define __OG_VIDEO_STREAM_FACTORY__
+#ifndef __VSAL_VIDEO_STREAM_FACTORY__
+#define __VSAL_VIDEO_STREAM_FACTORY__
 
 /************************************************************************************
 *									   Includes										*
@@ -34,21 +34,25 @@ namespace vsal
 
         /** Create video stream from camera.
             uEye camera ids start from 1.
-            \param device Device's id
-            \param frameWidth The width in pixels for each of the incoming frames
-            \param frameHeight The height in pixels for each of the incoming frames
+            \param device Device's id.
+            \param frameWidth The width in pixels for each of the incoming frames.
+            \param frameHeight The height in pixels for each of the incoming frames.
+			\param Frames per second.
             \return A video stream than can be tracked from.
         */
-        VideoStream* create(int device, int frameWidth = 0, int frameHeight = 0);
+        VideoStream* create(int device, int frameWidth = 0, int frameHeight = 0,
+			double fps = 0);
 
         /** Create video stream from video file or a directory of images.
+		\param path Path to a video file or a directory of images.
+		\param fps Frames per second for displaying.
         */
-        VideoStream* create(const std::string& path);
+        VideoStream* create(const std::string& path, double fps);
 
 		/** Create video stream from video file, a directory of images or from camera.
 		*/
 		VideoStream* create(const std::string& path, int device,
-			int frameWidth = 0, int frameHeight = 0);
+			int frameWidth = 0, int frameHeight = 0, double fps = 0.0);
 
         /** Create video stream with command line arguments.
         */
@@ -65,4 +69,4 @@ namespace vsal
 }	// namespace vsal
 
 
-#endif	// __OG_VIDEO_STREAM_FACTORY__
+#endif	// __VSAL_VIDEO_STREAM_FACTORY__

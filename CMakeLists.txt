@@ -24,7 +24,7 @@ option(WITH_UEYE "Include IDS uEye support" ON)
 
 # VSAL build components
 # ===================================================
-option(BUILD_PREVIEW "Build preview application" ON)
+option(BUILD_VSAL_PLAYER "Build vsal player application" ON)
 option(BUILD_DOCS "Build documentation using Doxygen" ON)
 option(BUILD_INTERFACE_CSHARP "Build interface for C#" ON)
 
@@ -83,9 +83,9 @@ include_directories(${PROJECT_BINARY_DIR}/include)
 add_subdirectory(vsal)
 set(VSAL_TARGETS vsal)
 
-if(BUILD_PREVIEW)
-	add_subdirectory(preview)
-	set(VSAL_TARGETS ${VSAL_TARGETS} preview)
+if(BUILD_VSAL_PLAYER)
+	add_subdirectory(vsal_player)
+	set(VSAL_TARGETS ${VSAL_TARGETS} vsal_player)
 endif()
 
 if(BUILD_DOCS)
