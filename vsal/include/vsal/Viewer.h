@@ -18,6 +18,23 @@
 
 namespace vsal
 {
+	enum KeyCode
+	{
+#if _WIN32
+		LEFT = 2424832,
+		UP = 2490368,
+		RIGHT = 2555904,
+		DOWN = 2621440,
+#else
+		LEFT = 81,
+		UP = 82,
+		RIGHT = 83,
+		DOWN = 84,
+#endif
+		ESCAPE = 27,
+		SPACE = ' '
+	};
+
 	/** Simple viewer implementation using video stream.
 	Includes pause feature and bidirectional stepping.
 	*/
@@ -86,7 +103,7 @@ namespace vsal
 		/**	This method will be called every iteration for processing key presses.
 		\param key The code of the presses key.
 		*/
-        virtual void onKeyPress(char key);
+        virtual void onKeyPress(int key);
 
 		/**	This method will be called wheneven a render is required.
 		\param frame The current frame from the video stream.
