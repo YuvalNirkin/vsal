@@ -86,7 +86,7 @@ namespace vsal
 		/**	This method will be called every iteration for processing key presses.
 		\param key The code of the presses key.
 		*/
-		virtual void onKeyPress(int key);
+        virtual void onKeyPress(char key);
 
 		/**	This method will be called wheneven a render is required.
 		\param frame The current frame from the video stream.

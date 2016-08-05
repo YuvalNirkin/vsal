@@ -24,17 +24,8 @@ using std::runtime_error;
 ************************************************************************************/
 namespace vsal
 {
-    VideoStream_uEye::VideoStream_uEye() :
-        VideoStream_uEye(0, 0, 0), mInitialized(false)
-    {
-    }
-
-    VideoStream_uEye::VideoStream_uEye(int frameWidth, int frameHeight) :
-        VideoStream_uEye(0, frameWidth, frameHeight), mInitialized(false)
-    {
-    }
-
-    VideoStream_uEye::VideoStream_uEye(int device, int frameWidth, int frameHeight) :
+    VideoStream_uEye::VideoStream_uEye(int device = 0, int frameWidth = 0,
+                                       int frameHeight = 0) :
         mRequestedWidth(frameWidth), mRequestedHeight(frameHeight),
         mDevice(device),
         mTimestamp(0),

@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         if (vs == nullptr) throw runtime_error("No video source specified!");
 
 		// Initialize viewer
-		vsal::Viewer viewer("vsal_player", vs.get(), false, true);
+        vsal::Viewer viewer("vsal_player", vs.get(), false, true);
 		viewer.run();
     }
     catch (std::exception& e)

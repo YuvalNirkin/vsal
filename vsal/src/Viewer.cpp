@@ -99,27 +99,27 @@ namespace vsal
 			}
 
 			// Check for keys pressed
-			int key = cv::waitKey(m_delay);
+            char key = cv::waitKey(m_delay);
 			onKeyPress(key);
 		}
 	}
 
 	void Viewer::onFrameChange(size_t prev_ind, size_t curr_ind) {}
 
-	void Viewer::onKeyPress(int key)
+    void Viewer::onKeyPress(char key)
 	{
 		switch (key) {
 		case 27:	// Escape
 		case 'q':
 			stop(); break;
-		case 32:	// Space
+        case ' ':	// Space
 		case 'p':
 			pause(!m_pause); break;
-		case 2424832:	// left
-		case 2621440:	// down
+        case 'Q':	// left
+        case 'T':	// down
 			seek_relative(-1); break;
-		case 2555904:	// right
-		case 2490368:	// up
+        case 'S':	// right
+        case 'R':	// up
 			seek_relative(1); break;
 		default:
 			break;
