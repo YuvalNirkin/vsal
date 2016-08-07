@@ -36,7 +36,7 @@ namespace vsal
 	};
 
 	/** Simple viewer implementation using video stream.
-	Includes pause feature and bidirectional stepping.
+	Features include pause, scaling, and bidirectional stepping.
 	*/
     class VSAL_EXPORT Viewer
 	{
@@ -47,17 +47,28 @@ namespace vsal
 		\param vs The video stream to display.
 		\param pause Set whether to start paused or not.
 		\param loop Set whether to loop the video stream or not.
-		\param delay Set the minimum delay between displayed frames [ms].
-		By default the delay will be derived from the video stream.
+		\param fps Set the maximum frames per second.
+		By default the fps will be derived from the video stream.
+        \param scale The frame's scale multiplier.
 		*/
 		Viewer(const std::string& title, vsal::VideoStreamOpenCV* vs,
-			bool pause = false, bool loop = false, int delay = -1);
+			bool pause = false, bool loop = false, 
+            float fps = 0, float scale = 1);
 
 		/**	Get the minimum delay between displayed frames.
 		By default the delay will be derived from the video stream.
 		This should be called after initialization.
 		*/
 		virtual int getDelay() const;
+
+        /**	Get the maximum frames per second.
+        By default the fps will be derived from the video stream.
+        */
+        virtual float getFPS() const;
+
+        /** Get the frame scale multiplier.
+        */
+        virtual float getScale() const;
 
 		/**	Initialize the viewer and the video stream if necessary.
 		*/
@@ -78,11 +89,20 @@ namespace vsal
 		/**	Set the minimum delay between displayed frames [ms].
 		By default the delay will be derived from the video stream.
 		*/
-		virtual void setDelay(int delay);
+		virtual bool setDelay(int delay);
+
+        /**	Set the maximum frames per second.
+        By default the fps will be derived from the video stream.
+        */
+        virtual bool setFPS(float fps);
 		
 		/**	Set whether to loop the video stream or not.
 		*/
 		virtual void setLoop(bool loop);
+
+        /** Set the frame scale multiplier.
+        */
+        virtual bool setScale(float scale);
 
 		/**	Stops the viewer. Intended to be used from a different thread.
 		*/
@@ -118,9 +138,11 @@ namespace vsal
 	protected:
 		std::string m_title;			///< The title of the display window.
 		vsal::VideoStreamOpenCV* m_vs;	///< The video stream to display.
+        cv::Mat frame_scaled;
 		bool m_running, m_refresh, m_pause, m_loop, m_init;
 		size_t m_total_frames, m_next_frame;
 		int m_delay;
+        float m_fps, m_requested_fps, m_scale;
 	};
 
 }	// namespace vsal
