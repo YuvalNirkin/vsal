@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
-project( vsal )
+project(vsal)
 
+# Includes
 include(GenerateExportHeader)
 
 # Set version
 set(VSAL_MAJOR_VERSION 1)
-set(VSAL_MINOR_VERSION 0)
+set(VSAL_MINOR_VERSION 1)
 set(VSAL_VERSION ${VSAL_MAJOR_VERSION}.${VSAL_MINOR_VERSION})
 
 # Global configurations
@@ -16,7 +17,9 @@ if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DVSAL_STATIC_DEFINE")
 else()
 	 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")
-endif() 
+endif()
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Optional 3rd party components
 # ===================================================

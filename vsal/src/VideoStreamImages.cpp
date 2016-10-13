@@ -162,7 +162,8 @@ namespace vsal
 		std::vector<std::string>& frames) const
 	{
 		boost::filesystem::path fs_path(path);
-		std::string dirPath = fs_path.parent_path().string();
+        boost::filesystem::path dirPath = fs_path.parent_path();
+        if(dirPath.empty()) dirPath = boost::filesystem::current_path();
 		boost::regex filter(fs_path.filename().string());
 		boost::smatch what;
 		directory_iterator end_itr; // Default ctor yields past-the-end
