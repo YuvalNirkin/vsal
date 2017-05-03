@@ -49,8 +49,10 @@ namespace vsal
     {
         if (mVideoFile.empty())
         {
-            mCap.set(cv::CAP_PROP_FRAME_WIDTH, (double)mRequestedWidth);
-            mCap.set(cv::CAP_PROP_FRAME_HEIGHT, (double)mRequestedHeight);
+			if(mRequestedWidth > 0)
+				mCap.set(cv::CAP_PROP_FRAME_WIDTH, (double)mRequestedWidth);
+			if (mRequestedHeight > 0)
+				mCap.set(cv::CAP_PROP_FRAME_HEIGHT, (double)mRequestedHeight);
 			if(mFPS > 0) mCap.set(cv::CAP_PROP_FPS, mFPS);
             if (!mCap.open(mDevice)) return false;
         }

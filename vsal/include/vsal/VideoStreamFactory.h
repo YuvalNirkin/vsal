@@ -47,12 +47,21 @@ namespace vsal
 		\param path Path to a video file or a directory of images.
 		\param fps Frames per second for displaying.
         */
-        VideoStream* create(const std::string& path, double fps = 0.0);
+        //VideoStream* create(const std::string& path, double fps = 0.0);
+
+		/** Create video stream from video file, a directory of images or from camera.
+		\param path Path to a video file or a directory of images.
+		\param frameWidth The width in pixels for each of the incoming frames.
+		\param frameHeight The height in pixels for each of the incoming frames.
+		\param Frames per second.
+		*/
+		VideoStream* create(const std::string& path,
+			int frameWidth = 0, int frameHeight = 0, double fps = 0.0);
 
 		/** Create video stream from video file, a directory of images or from camera.
 		*/
-		VideoStream* create(const std::string& path, int device,
-			int frameWidth = 0, int frameHeight = 0, double fps = 0.0);
+//		VideoStream* create(const std::string& path, int device,
+//			int frameWidth = 0, int frameHeight = 0, double fps = 0.0);
 
         /** Create video stream with command line arguments.
         */

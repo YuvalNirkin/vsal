@@ -2,6 +2,7 @@
 *									   Includes										*
 ************************************************************************************/
 #include "vsal/VideoStreamFactory.h"
+#include "vsal/utilities.h"
 #ifndef __ANDROID__
 #include "VideoStreamOpenCVImpl.h"
 #include "VideoStreamImages.h"
@@ -136,39 +137,49 @@ namespace vsal
 		return nullptr;
 	}
 #else
+	/*
 	VideoStream* VideoStreamFactory::create(const std::string& path, double fps)
 	{
+		return create(path, 0, 0, fps);
+	}
+	*/
+
+	VideoStream * VideoStreamFactory::create(const std::string& path, 
+		int frameWidth, int frameHeight, double fps)
+	{
+		int device = getDeviceID(path);
+
 		if (is_regular_file(path))
 		{
-			if(VideoStreamImages::is_image(path)) return new VideoStreamImages(path, fps);
+			if (is_image(path)) return new VideoStreamImages(path, fps);
 			else return new VideoStreamOpenCVImpl(path);
 		}
-		else return new VideoStreamImages(path);
+		else if (is_directory(path) || is_valid_pattern(path))
+			return new VideoStreamImages(path);
+		else if (device >= 0) return create(device, frameWidth, frameHeight, fps);
 	}
-
+	/*
 	VideoStream* VideoStreamFactory::create(const std::string& path, int device,
 		int frameWidth, int frameHeight, double fps)
 	{
 		// Create video source
 		if (device >= 0) return create(device, frameWidth, frameHeight);
-		else if (!path.empty()) return create(path, fps);
+		else if (!path.empty()) return create(path, 0, 0, fps);
 		else return nullptr;
 	}
+	*/
 
 	VideoStream* VideoStreamFactory::create(int argc, char** argv)
 	{
 		// Parse command line arguments
 		std::string inputPath;
-		int device;
 		unsigned int width, height;
 		double fps;
 		try {
 			options_description desc("Allowed options");
 			desc.add_options()
 				("help", "display the help message")
-				("input,i", value<std::string>(&inputPath), "input path")
-				("device,d", value<int>(&device)->default_value(-1),
-					"device id")
+				("input,i", value<std::string>(&inputPath), "input path or device id")
 				("width,w", value<unsigned int>(&width)->default_value(640),
 					"frame width")
 				("height,h", value<unsigned int>(&height)->default_value(480),
@@ -179,7 +190,7 @@ namespace vsal
 			variables_map vm;
 			store(command_line_parser(argc, argv).options(desc).
 				positional(positional_options_description().add("input", -1)).run(), vm);
-			if (vm.count("help")) {
+			if (vm.count("help")) {\
 				std::cout << "Usage: preview [options]" << std::endl;
 				std::cout << desc << std::endl;
 				return nullptr;
@@ -193,7 +204,7 @@ namespace vsal
 		}
 
 		// Create video source
-		return create(inputPath, device, width, height, fps);
+		return create(inputPath, width, height, fps);
 	}
 #endif  
 

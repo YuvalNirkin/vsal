@@ -99,12 +99,6 @@ namespace vsal
 		*/
 		size_t size() const;
 
-		static bool is_image(const std::string& path);
-
-		static bool is_pattern(const std::string& path);
-
-		static bool is_valid_pattern(const std::string& path);
-
     private:
         void getFrames(const std::string& path, std::vector<std::string>& frames) const;
 		void getFramesFromDir(const std::string& dirPath,
