@@ -3,17 +3,12 @@
 #  VSAL_INCLUDE_DIRS - include directories for vsal
 #  VSAL_LIBRARIES    - libraries to link against
 #  VSAL_EXECUTABLE   - the vsal player executable
+#  VSAL_INTERFACE_CSHARP_DIR   - the vsal C# interface directory
  
 # Compute paths
 get_filename_component(VSAL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
-#set(VSAL_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
- 
-# Include dir
-find_path(VSAL_INCLUDE_DIRS vsal/VideoStream.h
-	PATHS 
-	${VSAL_CMAKE_DIR}/../include
-	${VSAL_CMAKE_DIR}/include
-	) 
+set(VSAL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include")
+set(VSAL_INTERFACE_CSHARP_DIR "@CMAKE_INSTALL_PREFIX@/interfaces/csharp" CACHE PATH "vsal C# interface directory")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
 if(NOT TARGET vsal AND NOT vsal_BINARY_DIR)

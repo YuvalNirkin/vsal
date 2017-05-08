@@ -1,3 +1,9 @@
+# Validation
+if(NOT SWIG_FOUND)
+	message(STATUS "C# interface won't be built because SWIG is missing.")
+	return()
+endif()
+
 include(${SWIG_USE_FILE})
 include_directories(${CMAKE_SOURCE_DIR}/vsal/include)
 set(CMAKE_SWIG_FLAGS "")
@@ -26,24 +32,41 @@ endif()
 #    ARCHIVE DESTINATION lib COMPONENT dev
 #	 LIBRARY DESTINATION interfaces/csharp/bin COMPONENT dev
 #	 RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
+
+# if(MSVC)
+  # INSTALL(TARGETS vsal_csharp
+	# EXPORT vsal-targets
+    # CONFIGURATIONS Debug
+    # LIBRARY DESTINATION interfaces/csharp/bin/debug COMPONENT dev
+    # RUNTIME DESTINATION interfaces/csharp/bin/debug COMPONENT dev)
+  # INSTALL(TARGETS vsal_csharp
+	# EXPORT vsal-targets
+    # CONFIGURATIONS Release
+    # LIBRARY DESTINATION interfaces/csharp/bin/release COMPONENT dev
+    # RUNTIME DESTINATION interfaces/csharp/bin/release COMPONENT dev)
+# else()
+  # INSTALL(TARGETS vsal_csharp
+	# EXPORT vsal-targets
+    # CONFIGURATIONS Debug
+    # LIBRARY DESTINATION interfaces/csharp/lib/debug COMPONENT dev
+    # RUNTIME DESTINATION interfaces/csharp/bin/debug COMPONENT dev)
+  # INSTALL(TARGETS vsal_csharp
+	# EXPORT vsal-targets
+    # CONFIGURATIONS Release
+    # LIBRARY DESTINATION interfaces/csharp/lib/release COMPONENT dev
+    # RUNTIME DESTINATION interfaces/csharp/bin/release COMPONENT dev)
+# endif()
+	 
 if(MSVC)
   INSTALL(TARGETS vsal_csharp
-    CONFIGURATIONS Debug
-    LIBRARY DESTINATION interfaces/csharp/bin/debug COMPONENT dev
-    RUNTIME DESTINATION interfaces/csharp/bin/debug COMPONENT dev)
-  INSTALL(TARGETS vsal_csharp
-    CONFIGURATIONS Release
-    LIBRARY DESTINATION interfaces/csharp/bin/release COMPONENT dev
-    RUNTIME DESTINATION interfaces/csharp/bin/release COMPONENT dev)
+	EXPORT vsal-targets
+    LIBRARY DESTINATION interfaces/csharp/bin COMPONENT dev
+    RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
 else()
   INSTALL(TARGETS vsal_csharp
-    CONFIGURATIONS Debug
-    LIBRARY DESTINATION interfaces/csharp/lib/debug COMPONENT dev
-    RUNTIME DESTINATION interfaces/csharp/bin/debug COMPONENT dev)
-  INSTALL(TARGETS vsal_csharp
-    CONFIGURATIONS Release
-    LIBRARY DESTINATION interfaces/csharp/lib/release COMPONENT dev
-    RUNTIME DESTINATION interfaces/csharp/bin/release COMPONENT dev)
+	EXPORT vsal-targets
+    LIBRARY DESTINATION interfaces/csharp/lib COMPONENT dev
+    RUNTIME DESTINATION interfaces/csharp/bin COMPONENT dev)
 endif()
 	 
 install(FILES vsal_csharp.i DESTINATION interfaces/csharp)
