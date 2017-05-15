@@ -16,15 +16,20 @@ if(uEyeSDK_FOUND)
 endif()
 
 source_group("include\\vsal" FILES ${VSAL_INCLUDE})
-#message(STATUS "VSAL_SRC = " ${VSAL_SRC})
 
-include_directories(include)
 add_library(vsal SHARED ${VSAL_SRC})
-#target_link_libraries(vsal PRIVATE opencv_core opencv_imgproc opencv_imgcodecs opencv_videoio ${VSAL_OPT_LIBS})
-target_link_libraries(vsal PRIVATE ${OpenCV_LIBS} ${VSAL_OPT_LIBS})
-if(UNIX)
-	target_link_libraries(vsal PRIVATE ${Boost_LIBRARIES})
-endif(UNIX)
+target_include_directories(vsal PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_include_directories(vsal PRIVATE 
+	${Boost_INCLUDE_DIRS}
+	${OpenCV_INCLUDE_DIRS}
+)
+target_link_libraries(vsal PRIVATE 
+	${Boost_LIBRARIES}
+	${OpenCV_LIBS}
+	${VSAL_OPT_LIBS}
+)
 set_target_properties(vsal PROPERTIES DEBUG_POSTFIX _d)
 
 # Add export header

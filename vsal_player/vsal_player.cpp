@@ -14,7 +14,6 @@
 #include <memory>   // unique_ptr
 
 // Boost
-#include <boost/format.hpp>
 #include <boost/program_options.hpp>
 
 // OpenCV
