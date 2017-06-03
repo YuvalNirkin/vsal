@@ -34,7 +34,7 @@ option(BUILD_INTERFACE_CSHARP "Build interface for C#" ON)
 # Find dependencies
 # ===================================================
 # Boost
-option(WITH_BOOST_STATIC "Boost static libraries" ON)
+option(WITH_BOOST_STATIC "Boost static libraries" OFF)
 set(Boost_USE_STATIC_LIBS ${WITH_BOOST_STATIC})
 set(BOOST_ALL_DYN_LINK NOT ${WITH_BOOST_STATIC})
 if(WIN32)
